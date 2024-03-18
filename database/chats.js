@@ -346,13 +346,23 @@ async function addUserToRoom(postData) {
     await database.query(`START TRANSACTION;`);
 
     // Add the other users to the room
-    for (const user_id of users_ids) {
+    if (Array.isArray(users_ids)) {
+      for (const user_id of users_ids) {
+        await database.query(
+          `
+        INSERT INTO room_user (user_id, room_id, last_read_message_id)
+        VALUES (?, ?, 0)
+      `,
+          [user_id, room_id]
+        );
+      }
+    } else {
       await database.query(
         `
         INSERT INTO room_user (user_id, room_id, last_read_message_id)
         VALUES (?, ?, 0)
       `,
-        [user_id, room_id]
+        [users_ids, room_id]
       );
     }
 
