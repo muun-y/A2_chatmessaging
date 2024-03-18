@@ -364,16 +364,9 @@ async function sendMessage(postData) {
   let date = new Date();
 
   try {
-    let systemDate = new Intl.DateTimeFormat("default", {
-      timeZone: "America/Vancouver", // Set your system timezone here
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false, // Use 24-hour format
-    }).format(date);
+    // let systemDate = new Intl.DateTimeFormat("default", {
+    //   timeZone: "America/Vancouver", // Set your system timezone here
+    // }).format(date);
     // Start a transaction
     await database.query(`START TRANSACTION;`);
 
@@ -395,7 +388,7 @@ async function sendMessage(postData) {
       {
         room_user_id: room_user_id[0][0].room_user_id,
         text: text,
-        sent_datetime: systemDate,
+        sent_datetime: date,
       }
     );
 
