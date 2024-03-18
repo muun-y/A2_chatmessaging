@@ -1,0 +1,414 @@
+<%- include("templates/header") %>
+    <%- include("templates/navbar") %>
+        <div style="margin-top: 50px; padding: 0 50px;">
+            <div class="row" style="align-items: right;">
+                <div class="invite-col">
+                    <input id="open-button" type="button" value="Invite people" onclick="openForm()">
+                    <div class="form-popup" id="inviteForm">
+                        <form action="/chatInviting" class="form-container" method='post'>
+                            <input type="hidden" name="room_id" value="<%= room_id %>">
+                            <input type="hidden" name="room_name" value="<%=room_name%>">
+                            <input type="button" value="Close" onclick="closeForm()">
+                            <div id="list">
+                                <ul>
+                                    <%users.forEach(function(user) { %>
+                                        <li>
+                                            <input type="checkbox" id="<%=user.user_id%>" name="users_ids"
+                                                value="<%=user.user_id%>">
+                                            <label for='<%=user.user_id%>'>
+                                                <%=user.username%>
+                                            </label><br>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                            </div>
+                            <button type="submit" class="btn">Invite</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <h2 style="text-align:center; margin-top: 0px; margin-bottom: 10px;">
+                    <%= room_name%>
+                </h2>
+                <div class="chat-box" id="chat-box-wrap">
+                    <div class="wrap">
+                        <% let unreadMessageDisplayed=false; %>
+                            <% chats.forEach(function(chat, index) { %>
+                                <% if (!unreadMessageDisplayed && last_message.last_read_message_id && chat.message_id>
+                                    last_message.last_read_message_id) {
+                                    %>
+                                    <% unreadMessageDisplayed=true; %>
+                                        <p style="border-top: 4px dashed #ccc; margin-top: 10px; margin-bottom: 10px;">
+                                        </p>
+                                        <% } %>
+                                            <div class="messages">
+                                                <div class="<%= chat.username !== username ? 'chat ch1' : 'chat ch2' %>"
+                                                    id="name">
+                                                    <%= chat.username %>
+                                                        <%=last_message.last_read_message_id%>
+                                                            <%=chat.message_id%>
+                                                </div>
+                                                <div class="<%= chat.username !==username ? 'chat ch1' : 'chat ch2' %>">
+                                                    <div class="icon"><i class="fa-solid fa-user">
+                                                            <%=chat.profile_img%>
+                                                        </i></div>
+                                                    <div class="textbox <%= chat.message_id > last_message.last_read_message_id ? 'unread' : '' %>"
+                                                        onclick="showEmojis('<%= chat.message_id %>')">
+                                                        <input type="hidden" name="message_id"
+                                                            value="<%=chat.message_id %>" id="<%=chat.message_id %>">
+                                                        <%= chat.text %>
+                                                    </div>
+                                                    <div class="emojiDateWrapper">
+                                                        <div id="emojiContainer(<%= chat.message_id %>)"
+                                                            style="display: none;" class="emoji-div">
+                                                            <% emojis.forEach(function(emoji) { %>
+                                                                <form action="/addEmoji" method="post">
+                                                                    <input type="hidden" name="message_id"
+                                                                        value="<%= chat.message_id %>">
+                                                                    <input type="hidden" name="emoji_id"
+                                                                        value="<%=emoji.emoji_id %>">
+                                                                    <input type="hidden" name="image"
+                                                                        value="<%=emoji.image %>">
+                                                                    <input type="hidden" name="room_id"
+                                                                        value="<%= chat.room_id %>">
+                                                                    <input type="hidden" name="room_name"
+                                                                        value="<%= chat.name %>">
+                                                                    <button>
+                                                                        &#<%=emoji.image%>
+                                                                    </button>
+                                                                </form>
+                                                                <% }) %>
+                                                        </div>
+                                                        <div class=" chat_date">
+                                                            <% const date=new Date(chat.sent_datetime); %>
+                                                                <%= formatTimeAgo(date) %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="<%= chat.username !== username ? 'chat ch1' : 'chat ch2' %>"
+                                                    id="name">
+                                                    <div class="stickyEmoji" id="emojiContainer_<%= chat.message_id %>"
+                                                        style="display: block;">
+                                                        <% if (chat.emoji_ids && chat.emoji_img && chat.count_emoji) {
+                                                            %>
+                                                            <% const emoji_ids=chat.emoji_ids.split(','); %>
+                                                                <% const emoji_imgs=chat.emoji_img.split(','); %>
+                                                                    <% const count_emojis=chat.count_emoji.split(',');
+                                                                        %>
+                                                                        <% for (let i=0; i < emoji_ids.length; i++) { %>
+                                                                            <span id="emoji_wrapper_<%=emoji_ids[i]%>">
+                                                                                <span id="emoji_id_<%=emoji_ids[i]%>">
+                                                                                    <%= String.fromCodePoint(emoji_imgs[i])
+                                                                                        %>
+                                                                                </span>
+                                                                                <span
+                                                                                    id="count_emoji_id_<%=emoji_ids[i]%>">
+                                                                                    <%= count_emojis[i] %>
+                                                                                </span>
+                                                                            </span>
+                                                                            <% } %>
+                                                                                <% } %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                                <div id="messageContainer"></div>
+                    </div>
+                </div>
+                <div>
+                    <form action="/sendingMessage" method='post' id="messageForm" style="margin-top: 0px;">
+                        <!-- <form id="messageForm" style="margin-top: 0px;"> -->
+                        <div class="row">
+                            <div class="chat-col">
+                                <input type="hidden" name="room_name" value="<%=room_name%>" id="room_id">
+                                <input type="hidden" name="room_id" value="<%= room_id %>" id="room_id">
+                                <input id="messageInput" type="textarea" name="text" placeholder="Type a message"
+                                    required>
+                            </div>
+                            <div class="send-col">
+                                <input id="send-button" type="submit" value="send">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Invite form  open/close
+            function openForm() {
+                document.getElementById("inviteForm").style.display = "block";
+            }
+
+            function closeForm() {
+                document.getElementById("inviteForm").style.display = "none";
+            }
+
+            function markMessageAsRead(message_id) {
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/markAsRead", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                var data = {
+                    message_id: message_id,
+                    room_id: document.getElementById("room_id").value
+                };
+
+                xhr.send(JSON.stringify(data));
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            console.log("Message marked as read successfully!");
+                        } else {
+                            console.error("Failed to mark message as read!");
+                        }
+                    }
+                };
+            }
+
+            var message_ids = [];
+            function handleScroll() {
+                var chatBox = document.getElementById('chat-box-wrap');
+                var messageElements = document.querySelectorAll('.messages');
+
+                var viewTop = chatBox.scrollTop;
+                var viewBottom = viewTop + chatBox.clientHeight + 100;
+
+                var dashedLine = document.querySelector('.wrap p');
+
+
+                for (let i = 0; i < messageElements.length; i++) {
+                    var element = messageElements[i];
+                    var elementTop = element.offsetTop;
+                    var elementBottom = elementTop + element.offsetHeight;
+
+                    if (elementTop <= viewBottom && elementBottom >= viewTop) {
+                        var hiddenInput = element.querySelector('input[type="hidden"]');
+                        var messageId = hiddenInput.value;
+
+                        if (!message_ids.includes(messageId)) {
+                            var messageText = element.querySelector('.textbox');
+                            messageText.classList.remove('unread');
+                            dashedLine.style.display = 'none';
+                            message_ids.push(messageId);
+                            callMarkMessageAsRead(messageId);
+                        }
+                    }
+                }
+            }
+
+
+            function callMarkMessageAsRead() {
+
+                if (message_ids.length > 0) {
+                    var lastMessageId = message_ids[message_ids.length - 1];
+                    markMessageAsRead(lastMessageId);
+                }
+            }
+
+
+            document.getElementById('chat-box-wrap').addEventListener('scroll', handleScroll);
+
+
+
+            // Emojis
+            // Add event listener to chat element
+            window.onload = function () {
+                var chatElement = document.getElementById("chat");
+                if (chatElement) {
+                    chatElement.addEventListener("click", showEmojis);
+                }
+            };
+
+            // Show emojis
+            function showEmojis(roomId) {
+                var emojiContainer = document.getElementById("emojiContainer(" + roomId + ")");
+                if (emojiContainer.style.display === "none") {
+                    emojiContainer.style.display = "block";
+                } else {
+                    emojiContainer.style.display = "none";
+                }
+            }
+
+            // Add emoji to the chat
+            function addEmoji(messageId, emojiId, emojiImage) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/addEmoji", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                var data = {
+                    message_id: messageId,
+                    emoji_id: emojiId
+                };
+
+                xhr.send(JSON.stringify(data));
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            console.log("emoji added successfully!");
+
+                            // Update emoji count displayed on the page
+                            // var emojiContainer = document.getElementById("emojiContainer_" + messageId);
+                            // var emojiWrapper = emojiContainer.querySelector("#emoji_wrapper_" + emojiId);
+                            // if (emojiWrapper) {
+                            //     var emojiSpan = emojiWrapper.querySelector("#emoji_id_" + emojiId);
+                            //     var countSpan = emojiWrapper.querySelector("#count_emoji_id_" + emojiId);
+
+                            //     if (countSpan) {
+                            //         var count = parseInt(countSpan.textContent);
+                            //         countSpan.textContent = count + 1;
+                            //     }
+                            // }
+
+                            // Update emoji count displayed on the page
+                            var emojiContainer = document.getElementById("emojiContainer_" + messageId);
+                            if (!emojiContainer) {
+                                // Create emoji container div if it doesn't exist
+                                emojiContainer = document.createElement("div");
+                                emojiContainer.className = "stickyEmoji";
+                                emojiContainer.id = "emojiContainer_" + messageId;
+                                emojiContainer.style.display = "block";
+
+                                // Append emoji container to the parent element
+                                var parentElement = document.getElementById("name");
+                                parentElement.appendChild(emojiContainer);
+                            }
+
+                            var emojiWrapper = emojiContainer.querySelector("#emoji_wrapper_" + emojiId);
+                            if (!emojiWrapper) {
+                                // Create emoji wrapper span if it doesn't exist
+                                emojiWrapper = document.createElement("span");
+                                emojiWrapper.id = "emoji_wrapper_" + emojiId;
+
+                                // Append emoji wrapper to the emoji container
+                                emojiContainer.appendChild(emojiWrapper);
+                            }
+
+                            var emojiSpan = emojiWrapper.querySelector("#emoji_id_" + emojiId);
+                            if (!emojiSpan) {
+                                // Create emoji span if it doesn't exist
+                                emojiSpan = document.createElement("span");
+                                emojiSpan.id = "emoji_id_" + emojiId;
+                                emojiSpan.style.paddingRight = "5px";
+                                emojiSpan.innerHTML = String.fromCodePoint(emojiImage);
+
+                                // Append emoji span to the emoji wrapper
+                                emojiWrapper.appendChild(emojiSpan);
+                            }
+
+                            var countSpan = emojiWrapper.querySelector("#count_emoji_id_" + emojiId);
+                            if (!countSpan) {
+                                // Create count span if it doesn't exist
+                                countSpan = document.createElement("span");
+                                countSpan.id = "count_emoji_id_" + emojiId;
+                                countSpan.style.paddingRight = "5px";
+                                countSpan.textContent = "1"; // Set initial count to 1
+
+                                // Append count span to the emoji wrapper
+                                emojiWrapper.appendChild(countSpan);
+                            } else {
+                                // Increment count if the span exists
+                                var count = parseInt(countSpan.textContent);
+                                countSpan.textContent = count + 1;
+                            }
+                        } else {
+                            console.error("Failed to add emoji!");
+                        }
+                    }
+                };
+            }
+
+            // New message sending
+            // Send message form event listener
+            // document.getElementById("messageForm").addEventListener("submit", function (event) {
+            //     event.preventDefault();
+
+            //     var text = document.getElementById("messageInput").value;
+            //     var room_id = document.getElementById("room_id").value;
+            //     // Ajax
+            //     var xhr = new XMLHttpRequest();
+            //     xhr.open("POST", "/sendingMessage", true);
+            //     xhr.setRequestHeader("Content-Type", "application/json");
+
+            //     var data = {
+            //         text: text,
+            //         room_id: room_id
+            //     };
+            //     xhr.send(JSON.stringify(data))
+
+            //     xhr.onreadystatechange = function () {
+            //         if (xhr.readyState === XMLHttpRequest.DONE) {
+            //             if (xhr.status === 200) {
+            //                 console.log("Message sent successfully!");
+            //                 addMessageToContainer(JSON.parse(xhr.responseText));
+            //             } else {
+            //                 console.error("Failed to send message!");
+            //             }
+            //         }
+            //     };
+            //     document.getElementById("messageInput").value = "";
+            // });
+
+            // // Add message to the chat container
+            // function addMessageToContainer(message) {
+            //     var messageContainer = document.getElementById("messageContainer");
+            //     var messageDiv = document.createElement("div");
+
+            //     // Chat div
+            //     var chatDiv = document.createElement("div");
+            //     chatDiv.className = '<%= req.session.user_id %>' !== '<%= req.session.user_id %>' ? "chat ch1" : "chat ch2";
+
+            //     // Username div
+            //     var usernameDiv = document.createElement("div");
+            //     usernameDiv.className = '<%= req.session.user_id %>' !== '<%= req.session.user_id %>' ? "chat ch1" : "chat ch2";
+            //     usernameDiv.id = "name";
+            //     usernameDiv.textContent = '<%= req.session.username %>';
+
+            //     // Icon div
+            //     var iconDiv = document.createElement("div");
+            //     iconDiv.className = "icon";
+            //     iconDiv.innerHTML = '<i class="fa-solid fa-user"><%=req.session.profile_img%></i>';
+
+            //     // Text div
+            //     var textboxDiv = document.createElement("div");
+            //     textboxDiv.className = "textbox";
+            //     textboxDiv.textContent = message.text;
+
+            //     chatDiv.appendChild(iconDiv);
+            //     chatDiv.appendChild(textboxDiv);
+
+            //     // Append elements
+            //     messageDiv.appendChild(usernameDiv);
+            //     messageDiv.appendChild(chatDiv);
+
+            //     messageContainer.appendChild(messageDiv);
+            // }
+        </script>
+        <% function formatTimeAgo(date) { %>
+            <% const now=new Date(); %>
+                <% const today=new Date(now.getFullYear(), now.getMonth(), now.getDate()); %>
+                    <% const yesterday=new Date(today); %>
+                        <% yesterday.setDate(today.getDate() - 1); %>
+                            <% const diffTime=now - date; %>
+                                <% const diffMinutes=Math.floor(diffTime / (1000 * 60)); %>
+                                    <% const diffHours=Math.floor(diffMinutes / 60); %>
+                                        <% const diffDays=Math.floor(diffTime / (1000 * 60 * 60 * 24)); %>
+                                            <% if (date.toDateString()===yesterday.toDateString()) { %>
+                                                <%= "yesterday" %>
+                                                    <% } else if (date.toDateString()===today.toDateString()) { %>
+                                                        <% if (diffMinutes < 60) { %>
+                                                            <%= `${diffMinutes} minutes ago` %>
+                                                                <% } else { %>
+                                                                    <%= `${diffHours} hours ago` %>
+                                                                        <% } %>
+                                                                            <% } else { %>
+                                                                                <%= `${diffDays} days ago` %>
+                                                                                    <% } %>
+                                                                                        <% } %>
+
+                                                                                            <%- include("templates/footer")
+                                                                                                %>

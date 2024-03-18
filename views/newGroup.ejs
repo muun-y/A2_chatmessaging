@@ -1,0 +1,28 @@
+<%- include("templates/header") %>
+    <%- include("templates/navbar") %>
+
+        <form action='/creatingGroup' method='post'>
+            <div class="row">
+                <h2 style="text-align:center">Create New Group</h2>
+                <div class="col">
+                    <input name='name' type='text' placeholder='Group name' required><br>
+                    <div id="list">
+                        <ul>
+                            <%users.forEach(function(user) { %>
+                                <li>
+                                    <input type="checkbox" id="<%=user.user_id%>" name="users_ids"
+                                        value="<%=user.user_id%>">
+                                    <label for='<%=user.user_id%>'>
+                                        <%=user.username%>
+                                    </label><br>
+                                </li>
+                                <% }) %>
+                        </ul>
+                    </div>
+
+                    <input type="submit" value="Create Group">
+                </div>
+            </div>
+        </form>
+
+        <%- include("templates/footer") %>

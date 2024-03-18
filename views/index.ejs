@@ -1,0 +1,126 @@
+<%- include("templates/header") %>
+    <%- include("templates/navbar") %>
+        <div class="container">
+            <div class="row" style="align-items: right; padding: 0 50px;">
+                <div class="invite-col">
+                    <!-- <input id="new-group" type="button" value="Invite people"
+                                    onclick="document.getElementById('id01').style.display='block'"> -->
+                    <input id="open-button" type="button" value="Join chats" onclick="openForm()">
+                    <!-- <button class="open-button" onclick="openForm()">Open Form</button> -->
+                    <div class="form-popup" id="myForm">
+                        <form action="/chatJoining" class="form-container" method='post'>
+                            <input type="button" value="Close" onclick="closeForm()">
+                            <div id="list">
+                                <ul>
+                                    <%rooms.forEach(function(room) { %>
+                                        <li>
+                                            <input type="checkbox" id="<%=room.room_id%>" name="rooms_ids"
+                                                value="<%=room.room_id%>">
+                                            <label for='<%=room.room_id%>'>
+                                                <%=room.name%>
+                                            </label><br>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                            </div>
+                            <button type="submit" class="btn">Join</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <h2 style="text-align:center">Your Chats</h2>
+                <div class="col">
+                    <table style="width: 100%;">
+                        <!-- <colgroup>
+                            <col span="2" style="background-color: #D6EEEE">
+                        </colgroup> -->
+                        <tr style="background-color: #d8a48f; color:white;">
+                            <th>Group</th>
+                            <th>Last message</th>
+                            <th># Unread</th>
+                        </tr>
+                        <% if (chats.length===0) { %>
+                            <tr>
+                                <td colspan="3">No chats</td>
+                            </tr>
+                            <% } else { %>
+                                <% chats.forEach(function(chat) { %>
+                                    <tr onclick="redirectToChat('<%=chat.room_id%>','<%=chat.name%>')">
+                                        <td>
+                                            <%= chat.name %>
+                                        </td>
+                                        <td>
+                                            <% if (chat.latest_message_time==='No messages' ) { %>
+                                                <%= chat.latest_message_time %>
+                                                    <% } else { %>
+                                                        <% const date=new Date(chat.latest_message_time); const
+                                                            month=date.toLocaleString('en-US', { month: 'short' });
+                                                            const day=date.getDate(); const year=date.getFullYear();
+                                                            const formattedDate=`${month} ${day}, ${year}`; %>
+                                                            <%= formattedDate %> (<%= formatTimeAgo(date) %>)
+                                                                    <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (behinds.length===0) { %>
+                                                0
+                                                <% } else { %>
+                                                    <% let found=false; %>
+                                                        <% for (let i=0; i < behinds.length && !found; i++) { %>
+                                                            <% if (behinds[i].length !==0) { %>
+                                                                <% for (let j=0; j < behinds[i].length; j++) { %>
+                                                                    <% if (behinds[i][j] &&
+                                                                        chat.room_id===behinds[i][j].room_id) { %>
+                                                                        <%= behinds[i][j].unread_message_count %>
+                                                                            <% found=true; break; %>
+                                                                                <% } %>
+                                                                                    <% } %>
+                                                                                        <% } %>
+                                                                                            <% } %>
+                                                                                                <% if (!found) { %> 0 <%
+                                                                                                        } %>
+                                                                                                        <% } %>
+
+                                        </td>
+                                    </tr>
+
+                                    <% }) %>
+                                        <% } %>
+                                            <tr>
+                                                <td colspan="3" style="background-color: #d8a48f; text-align: right;">#
+                                                    of
+                                                    groups : <%= chats.length %>
+                                                </td>
+                                            </tr>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <input id="new-group" type="button" value="New Group" onclick="location.href='/newgroup';">
+                </div>
+            </div>
+
+        </div>
+        <% function formatTimeAgo(date) { const today=new Date(); const yesterday=new Date(today);
+            yesterday.setDate(today.getDate() - 1); const diffTime=today - date; const diffDays=Math.floor(diffTime /
+            (1000 * 60 * 60 * 24)); if (date.toDateString()===today.toDateString()) { return "today" ; } else if
+            (date.toDateString()===yesterday.toDateString()) { return "yesterday" ; } else { return `${diffDays} days
+            ago`; } } %>
+
+            <script>
+                function openForm() {
+                    document.getElementById("myForm").style.display = "block";
+                }
+
+                function closeForm() {
+                    document.getElementById("myForm").style.display = "none";
+                }
+
+                function redirectToChat(roomId, roomName) {
+                    window.location.href = `/chat?room_id=${roomId}&room_name=${roomName}`;
+                }
+            </script>
+            <%- include("templates/footer") %>
