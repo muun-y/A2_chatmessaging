@@ -275,7 +275,7 @@ app.get("/newgroup", async (req, res) => {
   var results = await db_users.getUsersWithoutSelf({
     username: req.session.username,
   });
-
+  console.log("results12", results);
   if (results) {
     res.render("newgroup", { users: results });
   } else {
