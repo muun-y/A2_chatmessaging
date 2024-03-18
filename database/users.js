@@ -48,7 +48,6 @@ async function getUsers(postData) {
 }
 
 async function getUsersWithoutSelf(postData) {
-  // console.log(postData.username, "postData.username");
   let getUsersWithoutSelfSQL = `
 		SELECT user_id, username
 		FROM user 

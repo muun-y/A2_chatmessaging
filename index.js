@@ -237,18 +237,18 @@ app.post("/loggingin", async (req, res) => {
   if (results) {
     if (results.length == 1) {
       //there should only be 1 user in the db that matches
-      // if (bcrypt.compareSync(password, results[0].password_hash)) {
-      req.session.authenticated = true;
-      req.session.username = username;
-      req.session.user_id = results[0].user_id;
-      req.session.profile_img = results[0].profile_img;
-      req.session.cookie.maxAge = expireTime;
+      if (bcrypt.compareSync(password, results[0].password_hash)) {
+        req.session.authenticated = true;
+        req.session.username = username;
+        req.session.user_id = results[0].user_id;
+        req.session.profile_img = results[0].profile_img;
+        req.session.cookie.maxAge = expireTime;
 
-      res.redirect("/");
-      return;
-      // } else {
-      //   console.log("invalid password");
-      // }
+        res.redirect("/");
+        return;
+      } else {
+        console.log("invalid password");
+      }
     } else {
       console.log("invalid user");
     }
@@ -275,7 +275,7 @@ app.get("/newgroup", async (req, res) => {
   var results = await db_users.getUsersWithoutSelf({
     username: req.session.username,
   });
-  console.log("results12", results);
+
   if (results) {
     res.render("newgroup", { users: results });
   } else {
@@ -285,9 +285,6 @@ app.get("/newgroup", async (req, res) => {
 
 app.use("/creatingGroup", sessionValidation);
 app.post("/creatingGroup", async (req, res) => {
-  // console.log(req.body.users_ids);
-  // console.log(req.body.groupname);
-
   var results = await db_chats.createChat({
     username: req.session.username,
     name: req.body.name,
