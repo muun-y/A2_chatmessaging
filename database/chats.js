@@ -292,15 +292,25 @@ async function addRoomToUser(postData) {
   try {
     // Start a transaction
     await database.query(`START TRANSACTION;`);
-
+    console.log(Array.isArray(rooms_ids));
     // Add the other users to the room
-    for (const room_id of rooms_ids) {
+    if (Array.isArray(rooms_ids)) {
+      for (const room_id of rooms_ids) {
+        await database.query(
+          `
+        INSERT INTO room_user (user_id, room_id, last_read_message_id)
+        VALUES (?, ?, 0)
+      `,
+          [user_id, room_id]
+        );
+      }
+    } else {
       await database.query(
         `
         INSERT INTO room_user (user_id, room_id, last_read_message_id)
         VALUES (?, ?, 0)
       `,
-        [user_id, room_id]
+        [user_id, rooms_ids]
       );
     }
 
