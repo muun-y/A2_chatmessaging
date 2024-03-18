@@ -270,14 +270,14 @@ app.get("/logout", (req, res) => {
 
 // A page that you can give your group a name and
 // select from a list of users to add to the group
-app.use("/newgroup", sessionValidation);
-app.get("/newgroup", async (req, res) => {
+app.use("/newGroup", sessionValidation);
+app.get("/newGroup", async (req, res) => {
   var results = await db_users.getUsersWithoutSelf({
     username: req.session.username,
   });
 
   if (results) {
-    res.render("newgroup", { users: results });
+    res.render("newGroup", { users: results });
   } else {
     res.render("errorMessage", { error: "Failed to get users." });
   }
