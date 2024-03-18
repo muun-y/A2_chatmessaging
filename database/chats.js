@@ -31,13 +31,23 @@ async function createChat(postData) {
     );
 
     // Add the other users to the room
-    for (const userId of users_ids) {
+    if (Array.isArray(users_ids)) {
+      for (const userId of users_ids) {
+        await database.query(
+          `
+        INSERT INTO room_user (user_id, room_id, last_read_message_id)
+        VALUES (?, ?, 0)
+      `,
+          [userId, lastRoomIdResult[0][0].room_id]
+        );
+      }
+    } else {
       await database.query(
         `
         INSERT INTO room_user (user_id, room_id, last_read_message_id)
         VALUES (?, ?, 0)
       `,
-        [userId, lastRoomIdResult[0][0].room_id]
+        [users_ids, lastRoomIdResult[0][0].room_id]
       );
     }
 
