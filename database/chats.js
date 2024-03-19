@@ -30,7 +30,7 @@ async function createChat(postData) {
       }
     );
 
-    // Add the other users to the room
+    // Add the other users to the room according to the users_ids array
     if (Array.isArray(users_ids)) {
       for (const userId of users_ids) {
         await database.query(
@@ -78,7 +78,6 @@ async function getChatsByUser(postData) {
   try {
     const results = await database.query(getChatsByUserSQL, params);
     console.log("Successfully invoked chats by user");
-    // console.log(results[0]);
     return results[0];
   } catch (err) {
     console.log("Error invoking chats");
@@ -148,7 +147,6 @@ async function getChatsLastMessageByUser(postData) {
 
 async function getBehind(postData) {
   let chats_info = postData.chats_info;
-  // console.log("chats_info", chats_info);
   let unreadCounts = [];
   try {
     // Start a transaction
@@ -384,10 +382,6 @@ async function sendMessage(postData) {
   let date = new Date();
 
   try {
-    // let systemDate = new Intl.DateTimeFormat("default", {
-    //   timeZone: "America/Vancouver", // Set your system timezone here
-    // }).format(date);
-    // Start a transaction
     await database.query(`START TRANSACTION;`);
 
     // Create the chat
