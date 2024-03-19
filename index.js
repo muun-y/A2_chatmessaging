@@ -167,10 +167,6 @@ app.post("/signingUp", upload.single("profile"), async (req, res) => {
   }
   var hashedPassword = "";
 
-  // if (!email || !username || !password) {
-  //   return res.render("signup", { missingFields: true });
-  // }
-
   //password validation >= 10 characters with upper/lower, numbers, symbols
   var regexUpper = /[A-Z]/;
   var regexLower = /[a-z]/;
@@ -185,7 +181,6 @@ app.post("/signingUp", upload.single("profile"), async (req, res) => {
     regexNumber.test(password) &&
     regexSymbol.test(password)
   ) {
-    // when password meets requirements
     bcrypt.hash(password, saltRounds, async (err, hash) => {
       if (err) {
         console.log(err);
@@ -195,10 +190,8 @@ app.post("/signingUp", upload.single("profile"), async (req, res) => {
 
         // Check if the profile image exists
         if (profile) {
-          // Save the file
           fs.writeFileSync(uploadPath, fs.readFileSync(profile.path));
         }
-        console.log("profileFileName", profileFileName);
         var success = await db_users.createUser({
           email: email,
           username: username,
@@ -211,12 +204,10 @@ app.post("/signingUp", upload.single("profile"), async (req, res) => {
           res.render("login", { users: results });
         } else {
           res.render("errorMessage", { error: "Failed to create user." });
-          // return res.render("signup", { invalidPassword: true });
         }
       }
     });
   } else {
-    // Password does not meet requirements
     return res.render("signup", { invalidPassword: true });
   }
 });
@@ -315,7 +306,6 @@ app.get("/chat", async (req, res) => {
   });
 
   var emojis = await db_emojis.getEmojis();
-  // console.log("emojis", emojis);
 
   if (chats && users) {
     res.render("chat", {
@@ -350,7 +340,7 @@ app.post("/markAsRead", async (req, res) => {
     res.status(200).json({});
   } catch (error) {
     console.error("Failed to update unread message:", error);
-    // 클라이언트에게 오류 응답 반환
+
     res.status(500).json({
       error: "Failed to update unread message!",
     });
@@ -437,7 +427,6 @@ app.use(express.static(__dirname + "/public"));
 //  Catch all other routes and 404s
 app.get("*", (req, res) => {
   res.status(404);
-  // res.send("Page not found - 404");
   res.render("404");
 });
 

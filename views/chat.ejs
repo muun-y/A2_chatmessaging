@@ -116,7 +116,6 @@
                 </div>
                 <div>
                     <form action="/sendingMessage" method='post' id="messageForm" style="margin-top: 0px;">
-                        <!-- <form id="messageForm" style="margin-top: 0px;"> -->
                         <div class="row">
                             <div class="chat-col">
                                 <input type="hidden" name="room_name" value="<%=room_name%>" id="room_id">
@@ -249,18 +248,6 @@
                         if (xhr.status === 200) {
                             console.log("emoji added successfully!");
 
-                            // Update emoji count displayed on the page
-                            // var emojiContainer = document.getElementById("emojiContainer_" + messageId);
-                            // var emojiWrapper = emojiContainer.querySelector("#emoji_wrapper_" + emojiId);
-                            // if (emojiWrapper) {
-                            //     var emojiSpan = emojiWrapper.querySelector("#emoji_id_" + emojiId);
-                            //     var countSpan = emojiWrapper.querySelector("#count_emoji_id_" + emojiId);
-
-                            //     if (countSpan) {
-                            //         var count = parseInt(countSpan.textContent);
-                            //         countSpan.textContent = count + 1;
-                            //     }
-                            // }
 
                             // Update emoji count displayed on the page
                             var emojiContainer = document.getElementById("emojiContainer_" + messageId);
@@ -320,71 +307,6 @@
                 };
             }
 
-            // New message sending
-            // Send message form event listener
-            // document.getElementById("messageForm").addEventListener("submit", function (event) {
-            //     event.preventDefault();
-
-            //     var text = document.getElementById("messageInput").value;
-            //     var room_id = document.getElementById("room_id").value;
-            //     // Ajax
-            //     var xhr = new XMLHttpRequest();
-            //     xhr.open("POST", "/sendingMessage", true);
-            //     xhr.setRequestHeader("Content-Type", "application/json");
-
-            //     var data = {
-            //         text: text,
-            //         room_id: room_id
-            //     };
-            //     xhr.send(JSON.stringify(data))
-
-            //     xhr.onreadystatechange = function () {
-            //         if (xhr.readyState === XMLHttpRequest.DONE) {
-            //             if (xhr.status === 200) {
-            //                 console.log("Message sent successfully!");
-            //                 addMessageToContainer(JSON.parse(xhr.responseText));
-            //             } else {
-            //                 console.error("Failed to send message!");
-            //             }
-            //         }
-            //     };
-            //     document.getElementById("messageInput").value = "";
-            // });
-
-            // // Add message to the chat container
-            // function addMessageToContainer(message) {
-            //     var messageContainer = document.getElementById("messageContainer");
-            //     var messageDiv = document.createElement("div");
-
-            //     // Chat div
-            //     var chatDiv = document.createElement("div");
-            //     chatDiv.className = '<%= req.session.user_id %>' !== '<%= req.session.user_id %>' ? "chat ch1" : "chat ch2";
-
-            //     // Username div
-            //     var usernameDiv = document.createElement("div");
-            //     usernameDiv.className = '<%= req.session.user_id %>' !== '<%= req.session.user_id %>' ? "chat ch1" : "chat ch2";
-            //     usernameDiv.id = "name";
-            //     usernameDiv.textContent = '<%= req.session.username %>';
-
-            //     // Icon div
-            //     var iconDiv = document.createElement("div");
-            //     iconDiv.className = "icon";
-            //     iconDiv.innerHTML = '<i class="fa-solid fa-user"><%=req.session.profile_img%></i>';
-
-            //     // Text div
-            //     var textboxDiv = document.createElement("div");
-            //     textboxDiv.className = "textbox";
-            //     textboxDiv.textContent = message.text;
-
-            //     chatDiv.appendChild(iconDiv);
-            //     chatDiv.appendChild(textboxDiv);
-
-            //     // Append elements
-            //     messageDiv.appendChild(usernameDiv);
-            //     messageDiv.appendChild(chatDiv);
-
-            //     messageContainer.appendChild(messageDiv);
-            // }
         </script>
         <% function formatTimeAgo(date) { %>
             <% const now=new Date(); %>

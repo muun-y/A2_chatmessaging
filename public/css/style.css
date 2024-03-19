@@ -21,7 +21,7 @@ textarea {
 
 input:focus,
 textarea:focus {
-  caret-color: auto; /* 선택한 요소에 대해서는 caret를 다시 활성화 */
+  caret-color: auto; /* reset to default */
 }
 
 ul {
@@ -62,9 +62,9 @@ li a:hover:not(.active) {
 }
 
 #emojiContainer {
-  display: inline-block; /* 가로로 배치되도록 설정 */
+  display: inline-block;
   white-space: nowrap;
-  line-height: 1; /* 텍스트가 넘칠 경우 줄 바꿈 방지 */
+  line-height: 1;
 }
 
 /* style inputs and link buttons */
@@ -314,10 +314,7 @@ td {
   border: none;
   cursor: pointer;
   opacity: 0.8;
-  /* position: fixed; */
   bottom: 23px;
-  /* right: 28px; */
-  /* width: 280px; */
   width: 20%;
   float: right;
   cursor: pointer;
@@ -330,8 +327,6 @@ td {
   margin-top: -60px !important;
   display: none;
   position: fixed;
-  /* bottom: 0; */
-  /* right: 15px; */
   border: 3px solid #f1f1f1;
   z-index: 9;
 }
@@ -501,10 +496,10 @@ input[type="textarea"] {
 
 .centered-chat {
   text-align: center;
-  margin-bottom: 10px; /* 필요한 만큼의 여백 설정 */
+  margin-bottom: 10px;
 }
 
 .centered-username {
   text-align: center;
-  font-weight: bold; /* 초대 알림 텍스트에 더 강조를 주기 위한 스타일 */
+  font-weight: bold;
 }

@@ -8,7 +8,6 @@ async function getEmojis() {
   try {
     const results = await database.query(getEmojisSQL);
     console.log("Successfully found emojis");
-    // console.log(results[0]);
     return results[0];
   } catch (err) {
     console.log("Error trying to find emojis");
@@ -32,7 +31,7 @@ async function addEmojiToChat(postData) {
   try {
     const results = await database.query(addEmojiToChatSQL, params);
     console.log("Successfully found emojis");
-    // console.log(results[0]);
+
     return true;
   } catch (err) {
     console.log("Error trying to find emojis");

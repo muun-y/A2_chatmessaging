@@ -5,17 +5,11 @@
             <div class="col">
                 <input name='email' type='email' placeholder='email' required><br>
                 <input name='username' type='text' placeholder='username' required><br>
-                <!-- <input name='password' type='password' placeholder='password' required><br> -->
                 <input type="password" id="password" name="password"
                     pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[~!@#$%^&*()_+{}\[\]:;<>,.?/-]).{10,}"
                     title="Must contain at least one number and one uppercase and lowercase letter and one symbol, and at least 10 or more characters"
                     placeholder='password' required><br>
-                <!-- <% if (locals.invalidPassword) { %>
-                    <div style="color: darkred;">Password must be at least 10 characters long and contain at least one
-                        uppercase
-                        letter, one lowercase letter, one
-                        number, and one symbol.</div>
-                    <% } %> -->
+
                 <input name='profile' type='file' placeholder='profile image' accept="image/png, image/jpeg" /><br>
                 <input type="submit" value="Submit">
 
